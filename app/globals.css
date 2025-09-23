@@ -1,1 +1,45 @@
 @import "tailwindcss";
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-surface: hsl(var(--surface));
+  --color-card: hsl(var(--card));
+  --color-border: hsl(var(--border));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+}
+
+:root {
+  --primary: 188 82% 48%;           /* #6495ED = shade of blue */
+  --primary-foreground: 0 0% 100%;  /* #FFFFFF = white */
+  --secondary: 38 92% 50%;          /* #34C759 = shade of green */
+  --secondary-foreground: 0 0% 10%; /*  #1A1A1A = very dark grey */
+
+/* default dark theme */
+--background: 220 15% 8%;    /* #0D1117 = very dark blue/grey */
+--surface: 0 0% 10%;         /* #1A1A1A = very dark grey */
+--border: 220 10% 20%;       /* #2A2A2A = dark grey */
+--foreground: 0 0% 96%;      /* #F5F5F5 = light grey */
+--muted: 215 10% 45%;        /* #9CA3AF = blue grey */
+--muted-foreground: 215 12% 72%; /* #B6BBC2 = light blue grey */
+}
+
+.light {
+  --background: 248 16% 98%;  /* #F8FAFC = very light grey */
+  --surface: 0 0% 100%;       /* #FFFFFF = white */
+  --border: 215 16% 85%;      /* #E5E7EB = very light grey  */
+  --foreground: 215 28% 17%;  /* #1F2937 = dark blue grey */
+  --muted: 215 16% 75%;       /* #D1D5DB = light grey */
+  --muted-foreground: 215 14% 40%; /* #6B7280 = blue grey */
+}
+
+@layer base {
+html, body {
+    @apply bg-background text-foreground;
+}
+}
