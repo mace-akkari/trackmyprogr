@@ -42,4 +42,12 @@
 html, body {
     @apply bg-background text-foreground;
 }
+input:focus {
+  outline: none;
+  border-color: #06b6d4;
+  box-shadow: 0 0 0 2px #06b6d4;
+}
+button {
+  cursor: pointer;
+}
 }
