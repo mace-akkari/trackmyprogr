@@ -6,5 +6,6 @@ export interface Workout {
   sets: number;
   reps: number;
   weight: string;
+  category?: string;
   createdAt: Timestamp;
 }
