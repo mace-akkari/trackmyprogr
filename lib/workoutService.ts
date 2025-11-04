@@ -12,10 +12,19 @@ import {
 } from "firebase/firestore";
 import type { Workout } from "@/components/workouts/types";
 
-const workoutsCollectionRef = collection(db, "workouts");
+// utility: reference to workouts subcollection inside the given routine
+function getWorkoutsCollectionRef(routineId: string) {
+  return collection(db, "routines", routineId, "workouts");
+}
 
-export function subscribeWorkouts(callback: (workouts: Workout[]) => void) {
-  const queryRef = query(workoutsCollectionRef, orderBy("createdAt", "desc"));
+export function subscribeWorkouts(
+  routineId: string,
+  callback: (workouts: Workout[]) => void
+) {
+  const queryRef = query(
+    getWorkoutsCollectionRef(routineId),
+    orderBy("createdAt", "desc")
+  );
   return onSnapshot(
     queryRef,
     (snapshot) => {
@@ -31,22 +40,28 @@ export function subscribeWorkouts(callback: (workouts: Workout[]) => void) {
   );
 }
 
+// add a new workout into the workouts subcollection for the given routine
 export async function addWorkout(
+  routineId: string,
   workoutData: Omit<Workout, "id" | "createdAt">
 ) {
-  await addDoc(workoutsCollectionRef, {
+  await addDoc(getWorkoutsCollectionRef(routineId), {
     ...workoutData,
     createdAt: serverTimestamp(),
   });
 }
 
 export async function updateWorkout(
+  routineId: string,
   workoutId: string,
   partialUpdate: Partial<Omit<Workout, "id" | "createdAt">>
 ) {
-  await updateDoc(doc(db, "workouts", workoutId), partialUpdate);
+  await updateDoc(
+    doc(db, "routines", routineId, "workouts", workoutId),
+    partialUpdate
+  );
 }
 
-export async function deleteWorkoutById(workoutId: string) {
-  await deleteDoc(doc(db, "workouts", workoutId));
+export async function deleteWorkoutById(routineId: string, workoutId: string) {
+  await deleteDoc(doc(db, "routines", routineId, "workouts", workoutId));
 }
