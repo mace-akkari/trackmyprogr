@@ -9,34 +9,39 @@ import {
   deleteWorkoutById,
 } from "@/lib/workoutService";
 
-export function useWorkouts() {
+// each routine tab uses its own unique routineId, which then renders its workouts from firestore.
+export function useWorkouts(routineId: string) {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [editingWorkout, setEditingWorkout] = useState<Workout | null>(null);
 
   useEffect(() => {
-    const unsubscribe = subscribeWorkouts((nextWorkouts) => {
+    if (!routineId) return;
+    const unsubscribe = subscribeWorkouts(routineId, (nextWorkouts) => {
       setWorkouts(nextWorkouts);
     });
     return () => unsubscribe();
-  }, []);
+  }, [routineId]);
 
-  async function saveWorkout(workoutValues: {
+  async function saveWorkout(values: {
     name: string;
     sets: number;
     reps: number;
     weight: string;
+    category?: string;
   }) {
-    if (!workoutValues.name.trim()) return;
+    if (!routineId || !values.name.trim()) return;
+
     if (editingWorkout) {
-      await updateWorkout(editingWorkout.id, workoutValues);
+      await updateWorkout(routineId, editingWorkout.id, values);
       setEditingWorkout(null);
     } else {
-      await addWorkout(workoutValues);
+      await addWorkout(routineId, values);
     }
   }
 
   async function removeWorkout(workoutId: string) {
-    await deleteWorkoutById(workoutId);
+    if (!routineId) return;
+    await deleteWorkoutById(routineId, workoutId);
   }
 
   function cancelEditing() {
