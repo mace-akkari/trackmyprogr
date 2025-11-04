@@ -7,7 +7,7 @@ import { Timestamp } from "firebase/firestore";
 import { Pencil, Trash2 } from "lucide-react";
 
 function formatDate(value?: Timestamp | null) {
-  if (!value) return "Just now";
+  if (!value) return "Unknown date";
   try {
     return value.toDate().toLocaleDateString("en-GB", {
       day: "numeric",
@@ -42,22 +42,22 @@ function Stat({
 
 export function WorkoutCard({ workout, onEdit, onDelete }: WorkoutCardProps) {
   return (
-    <Card className="p-4">
+    <Card className="p-3">
       <div className="flex justify-between items-start mb-2">
         <div className="flex-1">
           <h3 className="font-semibold text-lg">{workout.name}</h3>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             Added {formatDate(workout.createdAt)}
           </p>
         </div>
         <div className="flex gap-2">
           <Button
-            variant="default"
+            variant="outline"
             size="sm"
             onClick={() => onEdit(workout)}
             aria-label="Edit workout"
             title="Edit workout"
-            className="transition-transform duration-200 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2"
+            className="transition-transform duration-200 hover:scale-[1.1]"
           >
             <span className="inline-flex items-center gap-1">
               <Pencil className="h-4 w-4" /> Edit
@@ -69,7 +69,7 @@ export function WorkoutCard({ workout, onEdit, onDelete }: WorkoutCardProps) {
             onClick={() => onDelete(workout.id)}
             aria-label="Delete workout"
             title="Delete workout"
-            className="transition-transform duration-200 hover:scale-[1.02] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
+            className="transition-transform duration-200 hover:scale-[1.1] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
           >
             <span className="inline-flex items-center gap-1">
               <Trash2 className="h-4 w-4" /> Delete
@@ -78,7 +78,7 @@ export function WorkoutCard({ workout, onEdit, onDelete }: WorkoutCardProps) {
         </div>
       </div>
 
-      <div className="flex gap-4 text-sm">
+      <div className="flex flex-wrap gap-4 text-sm">
         <Stat label="Sets" value={workout.sets} />
         <Stat label="Reps" value={workout.reps} />
         <Stat label="Weight" value={workout.weight} />
