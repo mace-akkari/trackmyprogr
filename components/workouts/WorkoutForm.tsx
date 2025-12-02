@@ -67,13 +67,25 @@ export function WorkoutForm({
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    const trimmedName = name.trim();
+    const trimmedCategory = category.trim();
+    const trimmedWeight = weight.trim();
+
+    if (!trimmedName) return;
+
     await onSubmit({
-      name,
-      sets: Number(sets),
-      reps: Number(reps),
-      weight,
-      category: category || undefined,
+      name: trimmedName,
+      sets: Number(sets) || 0,
+      reps: Number(reps) || 0,
+      weight: trimmedWeight,
+      category: trimmedCategory || undefined,
     });
+    setName("");
+    setCategory("");
+    setSets("");
+    setReps("");
+    setWeight("");
   }
 
   return (

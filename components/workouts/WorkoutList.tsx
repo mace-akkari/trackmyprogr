@@ -14,24 +14,35 @@ export function WorkoutList({ workouts, onEdit, onDelete }: WorkoutListProps) {
   if (workouts.length === 0) {
     return (
       <Card className="p-8 text-center text-muted-foreground">
-        No workouts yet. Add your first one using the form above.
+        No workouts yet. Add your first one using the form above!
       </Card>
     );
   }
 
-  const groupedWorkouts = workouts.reduce<{
-    [key: string]: { displayCategory: string; workouts: Workout[] };
-  }>((groups, workoutItem) => {
-    const categoryKey = workoutItem.category?.toLowerCase() || "uncategorised";
+  const groupedWorkouts = workouts.reduce<
+    Record<string, { displayCategory: string; workouts: Workout[] }>
+  >((groups, workoutItem) => {
+    const rawCategory = (workoutItem.category || "").trim();
+
+    let normalised = rawCategory.toLowerCase();
+    if (normalised.endsWith(".")) {
+      normalised = normalised.slice(0, -1);
+    }
+
+    const isEmpty = normalised === "";
+    const categoryKey = isEmpty ? "uncategorised" : normalised;
+
+    const displayCategory = isEmpty
+      ? "Uncategorised"
+      : normalised.charAt(0).toUpperCase() + normalised.slice(1);
+
     if (!groups[categoryKey]) {
       groups[categoryKey] = {
-        displayCategory: workoutItem.category
-          ? workoutItem.category.charAt(0).toUpperCase() +
-            workoutItem.category.slice(1).toLowerCase()
-          : "Uncategorised",
+        displayCategory,
         workouts: [],
       };
     }
+
     groups[categoryKey].workouts.push(workoutItem);
     return groups;
   }, {});
@@ -44,6 +55,7 @@ export function WorkoutList({ workouts, onEdit, onDelete }: WorkoutListProps) {
             <h3 className="text-xl font-bold mb-3 text-primary">
               {displayCategory}
             </h3>
+
             <div className="space-y-4">
               {workouts.map((workoutItem) => (
                 <WorkoutCard
