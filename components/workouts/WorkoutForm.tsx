@@ -12,9 +12,10 @@ type WorkoutFormProps = {
     sets: number;
     reps: number;
     weight: string;
+    category?: string;
   }) => Promise<void>;
   onCancel: () => void;
-  editingWorkout: Workout | null;
+  editingWorkout: (Workout & { category?: string }) | null;
 };
 
 export function WorkoutForm({
@@ -26,6 +27,7 @@ export function WorkoutForm({
   const [sets, setSets] = useState("");
   const [reps, setReps] = useState("");
   const [weight, setWeight] = useState("");
+  const [category, setCategory] = useState("");
 
   useEffect(() => {
     if (editingWorkout) {
@@ -33,56 +35,78 @@ export function WorkoutForm({
       setSets(editingWorkout.sets?.toString() ?? "");
       setReps(editingWorkout.reps?.toString() ?? "");
       setWeight(editingWorkout.weight);
+      setCategory(editingWorkout.category ?? "");
     } else {
       setName("");
       setSets("");
       setReps("");
       setWeight("");
+      setCategory("");
     }
   }, [editingWorkout]);
 
-  async function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    if (!name.trim()) return;
+  function handleNameChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setName(event.target.value);
+  }
 
+  function handleCategoryChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setCategory(event.target.value);
+  }
+
+  function handleSetsChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setSets(event.target.value);
+  }
+
+  function handleRepsChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setReps(event.target.value);
+  }
+
+  function handleWeightChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setWeight(event.target.value);
+  }
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     await onSubmit({
       name,
-      sets: Number(sets || 0),
-      reps: Number(reps || 0),
+      sets: Number(sets),
+      reps: Number(reps),
       weight,
+      category: category || undefined,
     });
-
-    setName("");
-    setSets("");
-    setReps("");
-    setWeight("");
   }
 
   return (
     <Card className="p-6 mb-8">
       <h2 className="text-xl font-semibold mb-4">
-        {editingWorkout ? "Edit Workout" : "Add Workout"}
+        {editingWorkout ? "Edit Exercise" : "Add Exercise"}
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label
-            htmlFor="workout-name"
-            className="block text-sm font-medium mb-2"
-          >
-            Workout Name
-          </label>
           <Input
-            id="workout-name"
+            id="exercise-name"
             type="text"
             value={name}
-            onChange={(event) => setName(event.target.value)}
-            placeholder="Bench Press"
+            onChange={handleNameChange}
+            placeholder="Exercise Name"
             required
+            className="focus:ring-2 focus:ring-primary"
           />
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div>
+          <Input
+            id="workout-category"
+            type="text"
+            value={category}
+            onChange={handleCategoryChange}
+            placeholder="Category (e.g. Chest / Cardio)"
+            className="focus:ring-2 focus:ring-primary"
+          />
+        </div>
+
+        <div className="grid grid-cols-3 gap-4 p-4 border rounded-lg">
           <div>
             <label
               htmlFor="workout-sets"
@@ -97,8 +121,9 @@ export function WorkoutForm({
               step="1"
               min="1"
               value={sets}
-              onChange={(event) => setSets(event.target.value)}
+              onChange={handleSetsChange}
               placeholder="4"
+              className="focus:ring-2 focus:ring-primary"
             />
           </div>
 
@@ -116,8 +141,9 @@ export function WorkoutForm({
               step="1"
               min="1"
               value={reps}
-              onChange={(event) => setReps(event.target.value)}
+              onChange={handleRepsChange}
               placeholder="10"
+              className="focus:ring-2 focus:ring-primary"
             />
           </div>
 
@@ -132,13 +158,14 @@ export function WorkoutForm({
               id="workout-weight"
               type="text"
               value={weight}
-              onChange={(event) => setWeight(event.target.value)}
+              onChange={handleWeightChange}
               placeholder="20 kg"
+              className="focus:ring-2 focus:ring-primary"
             />
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 mt-6">
           <Button type="submit" className="flex-1">
             {editingWorkout ? "Update" : "Add"} Workout
           </Button>
