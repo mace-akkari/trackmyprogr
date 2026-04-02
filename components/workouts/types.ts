@@ -8,4 +8,5 @@ export interface Workout {
   weight: string;
   category?: string;
   createdAt: Timestamp;
+  notes?: string;
 }
