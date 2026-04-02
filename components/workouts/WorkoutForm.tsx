@@ -13,9 +13,10 @@ type WorkoutFormProps = {
     reps: number;
     weight: string;
     category?: string;
+    notes?: string;
   }) => Promise<void>;
   onCancel: () => void;
-  editingWorkout: (Workout & { category?: string }) | null;
+  editingWorkout: (Workout & { category?: string; notes?: string }) | null;
 };
 
 export function WorkoutForm({
@@ -28,6 +29,16 @@ export function WorkoutForm({
   const [reps, setReps] = useState("");
   const [weight, setWeight] = useState("");
   const [category, setCategory] = useState("");
+  const [notes, setNotes] = useState("");
+
+  function resetForm() {
+    setName("");
+    setCategory("");
+    setSets("");
+    setReps("");
+    setWeight("");
+    setNotes("");
+  }
 
   useEffect(() => {
     if (editingWorkout) {
@@ -36,12 +47,9 @@ export function WorkoutForm({
       setReps(editingWorkout.reps?.toString() ?? "");
       setWeight(editingWorkout.weight);
       setCategory(editingWorkout.category ?? "");
+      setNotes(editingWorkout.notes ?? "");
     } else {
-      setName("");
-      setSets("");
-      setReps("");
-      setWeight("");
-      setCategory("");
+      resetForm();
     }
   }, [editingWorkout]);
 
@@ -65,12 +73,17 @@ export function WorkoutForm({
     setWeight(event.target.value);
   }
 
+  function handleNotesChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
+    setNotes(event.target.value);
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const trimmedName = name.trim();
     const trimmedCategory = category.trim();
     const trimmedWeight = weight.trim();
+    const trimmedNotes = notes.trim();
 
     if (!trimmedName) return;
 
@@ -80,12 +93,10 @@ export function WorkoutForm({
       reps: Number(reps) || 0,
       weight: trimmedWeight,
       category: trimmedCategory || undefined,
+      notes: trimmedNotes || undefined,
     });
-    setName("");
-    setCategory("");
-    setSets("");
-    setReps("");
-    setWeight("");
+
+    resetForm();
   }
 
   return (
@@ -113,7 +124,7 @@ export function WorkoutForm({
             type="text"
             value={category}
             onChange={handleCategoryChange}
-            placeholder="Category (e.g. Chest / Cardio)"
+            placeholder="Category (e.g. Chest / Back / Cardio)"
             className="focus:ring-2 focus:ring-primary"
           />
         </div>
@@ -175,6 +186,24 @@ export function WorkoutForm({
               className="focus:ring-2 focus:ring-primary"
             />
           </div>
+        </div>
+
+        <div>
+          <label
+            htmlFor="workout-notes"
+            className="block text-sm font-medium mb-2"
+          >
+            Notes (optional)
+          </label>
+          <textarea
+            id="workout-notes"
+            value={notes}
+            onChange={handleNotesChange}
+            placeholder="Any notes for next time?"
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm
+                       shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1
+                       resize-y"
+          />
         </div>
 
         <div className="flex gap-2 mt-6">
