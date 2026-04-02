@@ -83,6 +83,9 @@ export function WorkoutCard({ workout, onEdit, onDelete }: WorkoutCardProps) {
         <Stat label="Reps" value={workout.reps} />
         <Stat label="Weight" value={workout.weight} />
       </div>
+      <div className="mt-2 text-sm text-muted-foreground/80 line-clamp-2">
+        {workout.notes ? workout.notes : "No notes for this exercise"}
+      </div>
     </Card>
   );
 }
