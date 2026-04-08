@@ -32,7 +32,7 @@ function Stat({
   label: string;
   value?: number | string | null;
 }) {
-  if (!value) return null;
+  if (value === undefined || value === null || value === "") return null;
   return (
     <span>
       <span className="font-medium">{label}:</span> {value}
@@ -42,7 +42,10 @@ function Stat({
 
 export function WorkoutCard({ workout, onEdit, onDelete }: WorkoutCardProps) {
   return (
-    <Card id={`workout-${workout.id}`} className="p-3">
+    <Card
+      id={`workout-${workout.id}`}
+      className="p-3 transition-all duration-500 border border-white"
+    >
       <div className="flex justify-between items-start mb-2">
         <div className="flex-1">
           <h3 className="font-semibold text-lg">{workout.name}</h3>

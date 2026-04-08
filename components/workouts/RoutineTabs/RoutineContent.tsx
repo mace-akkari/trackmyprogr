@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { Card } from "@/components/ui/card";
 import { useWorkouts } from "@/components/workouts/useWorkouts";
 import { WorkoutForm } from "@/components/workouts/WorkoutForm";
 import { WorkoutList } from "@/components/workouts/WorkoutList";
@@ -43,6 +42,13 @@ export default function RoutineContent({ routineId }: { routineId: string }) {
       block: "center",
     });
 
+    // add highlight class then remove it
+    workoutCardElement.classList.add("workout-card-highlight");
+
+    setTimeout(() => {
+      workoutCardElement.classList.remove("workout-card-highlight");
+    }, 1200);
+
     setPendingScrollWorkoutId(null);
   }, [workouts, pendingScrollWorkoutId]);
 
@@ -59,13 +65,11 @@ export default function RoutineContent({ routineId }: { routineId: string }) {
   return (
     <div className="space-y-6">
       <div ref={formContainerRef}>
-        <Card className="p-6">
-          <WorkoutForm
-            onSubmit={handleSubmit}
-            onCancel={cancelEditing}
-            editingWorkout={editingWorkout}
-          />
-        </Card>
+        <WorkoutForm
+          onSubmit={handleSubmit}
+          onCancel={cancelEditing}
+          editingWorkout={editingWorkout}
+        />
       </div>
       <WorkoutList
         workouts={workouts}

@@ -38,6 +38,13 @@
   --muted-foreground: 215 14% 40%; /* #6B7280 = blue grey */
 }
 
+.workout-card-highlight {
+  border-color: rgb(34 211 238 / 1);
+  box-shadow: 0 0 0 6px rgb(34 211 238 / 0.35);
+  background-color: rgb(34 211 238 / 0.08);
+  transform: translateY(-3px);
+}
+
 @layer base {
 html, body {
     @apply bg-background text-foreground;
