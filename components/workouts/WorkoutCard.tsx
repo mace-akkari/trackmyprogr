@@ -42,7 +42,7 @@ function Stat({
 
 export function WorkoutCard({ workout, onEdit, onDelete }: WorkoutCardProps) {
   return (
-    <Card className="p-3">
+    <Card id={`workout-${workout.id}`} className="p-3">
       <div className="flex justify-between items-start mb-2">
         <div className="flex-1">
           <h3 className="font-semibold text-lg">{workout.name}</h3>
