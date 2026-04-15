@@ -6,17 +6,21 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import type { Workout } from "./types";
 
+type WorkoutFormValues = Omit<Workout, "id" | "createdAt">;
+
 type WorkoutFormProps = {
-  onSubmit: (values: {
-    name: string;
-    sets: number;
-    reps: number;
-    weight: string;
-    category?: string;
-    notes?: string;
-  }) => Promise<void>;
+  onSubmit: (values: WorkoutFormValues) => Promise<void>;
   onCancel: () => void;
   editingWorkout: (Workout & { category?: string; notes?: string }) | null;
+};
+
+const initialFormValues = {
+  name: "",
+  sets: "",
+  reps: "",
+  weight: "",
+  category: "",
+  notes: "",
 };
 
 export function WorkoutForm({
@@ -24,77 +28,67 @@ export function WorkoutForm({
   onCancel,
   editingWorkout,
 }: WorkoutFormProps) {
-  const [name, setName] = useState("");
-  const [sets, setSets] = useState("");
-  const [reps, setReps] = useState("");
-  const [weight, setWeight] = useState("");
-  const [category, setCategory] = useState("");
-  const [notes, setNotes] = useState("");
+  const [formValues, setFormValues] = useState(initialFormValues);
 
   function resetForm() {
-    setName("");
-    setCategory("");
-    setSets("");
-    setReps("");
-    setWeight("");
-    setNotes("");
+    setFormValues(initialFormValues);
   }
 
   useEffect(() => {
     if (editingWorkout) {
-      setName(editingWorkout.name);
-      setSets(editingWorkout.sets?.toString() ?? "");
-      setReps(editingWorkout.reps?.toString() ?? "");
-      setWeight(editingWorkout.weight);
-      setCategory(editingWorkout.category ?? "");
-      setNotes(editingWorkout.notes ?? "");
+      setFormValues({
+        name: editingWorkout.name,
+        sets: editingWorkout.sets?.toString() ?? "",
+        reps: editingWorkout.reps?.toString() ?? "",
+        weight: editingWorkout.weight,
+        category: editingWorkout.category ?? "",
+        notes: editingWorkout.notes ?? "",
+      });
     } else {
       resetForm();
     }
   }, [editingWorkout]);
 
-  function handleNameChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setName(event.target.value);
-  }
-
-  function handleCategoryChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setCategory(event.target.value);
-  }
-
-  function handleSetsChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setSets(event.target.value);
-  }
-
-  function handleRepsChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setReps(event.target.value);
-  }
-
-  function handleWeightChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setWeight(event.target.value);
-  }
-
-  function handleNotesChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
-    setNotes(event.target.value);
+  function handleInputChange(
+    field: keyof typeof initialFormValues,
+    value: string,
+  ) {
+    setFormValues((currentValues) => ({
+      ...currentValues,
+      [field]: value,
+    }));
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const trimmedName = name.trim();
-    const trimmedCategory = category.trim();
-    const trimmedWeight = weight.trim();
-    const trimmedNotes = notes.trim();
+    const trimmedName = formValues.name.trim();
+    const trimmedCategory = formValues.category.trim();
+    const trimmedWeight = formValues.weight.trim();
+    const trimmedNotes = formValues.notes.trim();
 
     if (!trimmedName) return;
 
-    await onSubmit({
+    const values: {
+      name: string;
+      sets: number;
+      reps: number;
+      weight: string;
+      category: string;
+      notes?: string;
+    } = {
       name: trimmedName,
-      sets: Number(sets) || 0,
-      reps: Number(reps) || 0,
+      sets: Number(formValues.sets) || 0,
+      reps: Number(formValues.reps) || 0,
       weight: trimmedWeight,
-      category: trimmedCategory || undefined,
-      notes: trimmedNotes || undefined,
-    });
+      category: trimmedCategory,
+    };
+
+    if (trimmedNotes) {
+      values.notes = trimmedNotes;
+    }
+
+    await onSubmit(values);
 
     resetForm();
   }
@@ -110,8 +104,8 @@ export function WorkoutForm({
           <Input
             id="exercise-name"
             type="text"
-            value={name}
-            onChange={handleNameChange}
+            value={formValues.name}
+            onChange={(event) => handleInputChange("name", event.target.value)}
             placeholder="Exercise Name"
             required
             className="focus:ring-2 focus:ring-primary"
@@ -122,9 +116,12 @@ export function WorkoutForm({
           <Input
             id="workout-category"
             type="text"
-            value={category}
-            onChange={handleCategoryChange}
+            value={formValues.category}
+            onChange={(event) =>
+              handleInputChange("category", event.target.value)
+            }
             placeholder="Category (e.g. Chest / Back / Cardio)"
+            required
             className="focus:ring-2 focus:ring-primary"
           />
         </div>
@@ -143,8 +140,10 @@ export function WorkoutForm({
               inputMode="numeric"
               step="1"
               min="1"
-              value={sets}
-              onChange={handleSetsChange}
+              value={formValues.sets}
+              onChange={(event) =>
+                handleInputChange("sets", event.target.value)
+              }
               placeholder="4"
               className="focus:ring-2 focus:ring-primary"
             />
@@ -163,8 +162,10 @@ export function WorkoutForm({
               inputMode="numeric"
               step="1"
               min="1"
-              value={reps}
-              onChange={handleRepsChange}
+              value={formValues.reps}
+              onChange={(event) =>
+                handleInputChange("reps", event.target.value)
+              }
               placeholder="10"
               className="focus:ring-2 focus:ring-primary"
             />
@@ -180,8 +181,10 @@ export function WorkoutForm({
             <Input
               id="workout-weight"
               type="text"
-              value={weight}
-              onChange={handleWeightChange}
+              value={formValues.weight}
+              onChange={(event) =>
+                handleInputChange("weight", event.target.value)
+              }
               placeholder="20 kg"
               className="focus:ring-2 focus:ring-primary"
             />
@@ -197,8 +200,8 @@ export function WorkoutForm({
           </label>
           <textarea
             id="workout-notes"
-            value={notes}
-            onChange={handleNotesChange}
+            value={formValues.notes}
+            onChange={(event) => handleInputChange("notes", event.target.value)}
             placeholder="Any notes for next time?"
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm
                        shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1

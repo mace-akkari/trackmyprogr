@@ -6,7 +6,7 @@ export interface Workout {
   sets: number;
   reps: number;
   weight: string;
-  category?: string;
+  category: string;
   createdAt: Timestamp;
   notes?: string;
 }
