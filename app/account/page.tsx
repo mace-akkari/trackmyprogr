@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useAuth } from "@/hooks/useAuth";
+import { User } from "lucide-react";
 
 export default function AccountPage() {
   const { user } = useAuth();
@@ -15,10 +16,6 @@ export default function AccountPage() {
       </main>
     );
   }
-
-  const firstName = user?.displayName
-    ? user.displayName.split(" ")[0]
-    : "there";
 
   return (
     <main className="min-h-screen bg-background px-6 py-10">
@@ -42,9 +39,7 @@ export default function AccountPage() {
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <span className="text-2xl font-bold text-primary">
-                  {firstName.charAt(0).toUpperCase()}
-                </span>
+                <User className="h-8 w-8 text-primary" />
               )}
             </div>
 
