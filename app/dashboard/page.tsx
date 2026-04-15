@@ -1,13 +1,27 @@
+"use client";
+
 import Link from "next/link";
-import { LogoutButton } from "@/components/auth/LogoutButton";
 import { dashboardItems } from "@/components/dashboard/dashboardItems";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function DashboardPage() {
+  const { user } = useAuth();
+
+  const greetingName = user?.displayName
+    ? user.displayName.split(" ")[0]
+    : "there";
+
+  if (user === undefined) {
+    return <p className="text-sm text-muted-foreground">Loading...</p>;
+  }
+
   return (
     <main className="min-h-screen bg-background px-6 py-10">
       <div className="mx-auto flex min-h-[80vh] max-w-5xl flex-col justify-center">
         <div className="mb-10 text-center">
-          <h1 className="text-3xl font-bold md:text-4xl">Dashboard</h1>
+          <h1 className="text-3xl font-bold md:text-4xl capitalize">
+            Hi {greetingName}
+          </h1>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 text-center">
@@ -29,10 +43,6 @@ export default function DashboardPage() {
               </Link>
             );
           })}
-        </div>
-
-        <div>
-          <LogoutButton />
         </div>
       </div>
     </main>
