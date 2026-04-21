@@ -15,7 +15,7 @@ export function Navbar() {
   return (
     <nav className="sticky top-0 border-b border-border bg-background/80 backdrop-blur">
       <div className="mx-auto max-w-6xl px-4 py-3 flex justify-between items-center flex-col sm:flex-row">
-        <Link href="/" className="text-xl font-bold">
+        <Link href={user ? "/dashboard" : "/"} className="text-xl font-bold">
           Track My Progress
         </Link>
         <div className="flex items-center gap-3">
