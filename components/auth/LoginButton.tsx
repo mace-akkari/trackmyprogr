@@ -5,18 +5,10 @@ import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { FcGoogle } from "react-icons/fc";
 
-type SignInButtonProps = {
-  label?: string;
-  className?: string;
-};
-
-export default function SignInButton({
-  label = "Sign in with Google",
-  className,
-}: SignInButtonProps) {
+export function useGoogleSignIn() {
   const router = useRouter();
 
-  const handleGoogleSignIn = async () => {
+  return async function handleGoogleSignIn() {
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
@@ -25,6 +17,18 @@ export default function SignInButton({
       console.error("Google sign-in error:", error);
     }
   };
+}
+
+type SignInButtonProps = {
+  label?: string;
+  className?: string;
+};
+
+export default function SignInButton({
+  label = "Sign in",
+  className,
+}: SignInButtonProps) {
+  const handleGoogleSignIn = useGoogleSignIn();
 
   return (
     <button
