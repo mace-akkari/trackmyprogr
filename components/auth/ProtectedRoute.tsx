@@ -1,5 +1,5 @@
 "use client";
-import { ReactNode, useMemo } from "react";
+import { ReactNode, useEffect, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -14,12 +14,17 @@ export default function ProtectedRoute({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { user } = useAuth();
 
+  useEffect(() => {
+    if (user === null && !isPublic) {
+      router.push("/");
+    }
+  }, [user, isPublic, router]);
+
   if (user === undefined) {
     return <p>Loading...</p>;
   }
 
   if (!user && !isPublic) {
-    router.push("/");
     return null;
   }
 
