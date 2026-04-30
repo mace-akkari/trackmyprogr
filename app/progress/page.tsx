@@ -1,29 +1,49 @@
 "use client";
 
 import { Activity, Dumbbell, CalendarDays } from "lucide-react";
+import { useProgressStats } from "@/hooks/useProgressStats";
 
-const progressStats = [
-  {
-    title: "Total Workouts",
-    value: "0",
-    description: "Sessions completed so far",
-    icon: Dumbbell,
-  },
-  {
-    title: "Exercises Logged",
-    value: "0",
-    description: "Exercises added across routines",
-    icon: Activity,
-  },
-  {
-    title: "Last Workout",
-    value: "No data yet",
-    description: "Your most recent training session",
-    icon: CalendarDays,
-  },
-] as const;
+function getProgressStats(
+  loggedExercises: number,
+  totalSets: number,
+  lastWorkoutDate: string,
+) {
+  return [
+    {
+      title: "Total Exercises",
+      value: loggedExercises.toString(),
+      description: "Exercises logged across all routines",
+      icon: Dumbbell,
+    },
+    {
+      title: "Total Sets",
+      value: totalSets.toString(),
+      description: "Sets completed across all routines",
+      icon: Activity,
+    },
+    {
+      title: "Last Activity",
+      value: lastWorkoutDate,
+      description: "Most recent workout across all routines",
+      icon: CalendarDays,
+    },
+  ] as const;
+}
 
 export default function ProgressPage() {
+  const { loggedExercises, totalSets, lastWorkoutDate, isLoading } =
+    useProgressStats();
+
+  const progressStats = getProgressStats(
+    loggedExercises,
+    totalSets,
+    lastWorkoutDate,
+  );
+
+  if (isLoading) {
+    return <p className="text-sm text-muted-foreground">Loading...</p>;
+  }
+
   return (
     <main className="min-h-screen bg-background px-6 py-10">
       <div className="mx-auto max-w-5xl">
