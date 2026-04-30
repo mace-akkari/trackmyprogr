@@ -31,8 +31,13 @@ function getProgressStats(
 }
 
 export default function ProgressPage() {
-  const { loggedExercises, totalSets, lastWorkoutDate, isLoading } =
-    useProgressStats();
+  const {
+    loggedExercises,
+    totalSets,
+    lastWorkoutDate,
+    recentWorkouts,
+    isLoading,
+  } = useProgressStats();
 
   const progressStats = getProgressStats(
     loggedExercises,
@@ -81,10 +86,52 @@ export default function ProgressPage() {
 
         <div className="mt-10 rounded-2xl border border-white bg-card p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary/80 hover:shadow-lg">
           <h2 className="text-xl font-semibold">Recent Activity</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Your recent workout sessions will appear here when you start logging
-            them.
-          </p>
+
+          {recentWorkouts.length === 0 ? (
+            <p className="mt-2 text-sm text-muted-foreground">
+              Your recent workout sessions will appear here when you start
+              logging them.
+            </p>
+          ) : (
+            <div className="mt-4 space-y-3">
+              {recentWorkouts.map((workout) => {
+                const workoutDate = workout.createdAt
+                  ? workout.createdAt.toDate().toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })
+                  : "";
+                return (
+                  <div
+                    key={workout.id}
+                    className="rounded-xl border border-white bg-background p-4"
+                  >
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="text-sm text-primary/80 font-medium">
+                          {workout.routineName}
+                        </p>
+
+                        {workoutDate && (
+                          <p className="text-xs text-muted-foreground">
+                            {workoutDate}
+                          </p>
+                        )}
+
+                        <h3 className="font-semibold">{workout.name}</h3>
+
+                        <p className="text-sm text-muted-foreground">
+                          {workout.sets} × {workout.reps} ·{" "}
+                          {workout.weight || "-"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </main>

@@ -9,7 +9,12 @@ type ProgressStats = {
   loggedExercises: number;
   totalSets: number;
   lastWorkoutDate: string;
+  recentWorkouts: WorkoutWithRoutine[];
   isLoading: boolean;
+};
+
+type WorkoutWithRoutine = Workout & {
+  routineName: string;
 };
 
 function formatWorkoutDate(workout: Workout) {
@@ -22,7 +27,7 @@ function formatWorkoutDate(workout: Workout) {
   });
 }
 
-function calculateProgressStats(workouts: Workout[]): ProgressStats {
+function calculateProgressStats(workouts: WorkoutWithRoutine[]): ProgressStats {
   const sortedWorkouts = workouts
     .filter((workout) => workout.createdAt)
     .sort(
@@ -43,6 +48,7 @@ function calculateProgressStats(workouts: Workout[]): ProgressStats {
     lastWorkoutDate: latestWorkout
       ? formatWorkoutDate(latestWorkout)
       : "No data yet",
+    recentWorkouts: sortedWorkouts.slice(0, 5),
     isLoading: false,
   };
 }
@@ -52,6 +58,7 @@ export function useProgressStats(): ProgressStats {
     loggedExercises: 0,
     totalSets: 0,
     lastWorkoutDate: "No data yet",
+    recentWorkouts: [],
     isLoading: true,
   });
 
@@ -65,13 +72,14 @@ export function useProgressStats(): ProgressStats {
         workoutUnsubscribes.forEach((unsubscribe) => unsubscribe());
         workoutUnsubscribes = [];
 
-        const workoutsByRoutine: Record<string, Workout[]> = {};
+        const workoutsByRoutine: Record<string, WorkoutWithRoutine[]> = {};
 
         if (routinesSnapshot.empty) {
           setStats({
             loggedExercises: 0,
             totalSets: 0,
             lastWorkoutDate: "No data yet",
+            recentWorkouts: [],
             isLoading: false,
           });
           return;
@@ -88,12 +96,19 @@ export function useProgressStats(): ProgressStats {
           const workoutUnsubscribe = onSnapshot(
             routineWorkoutsRef,
             (workoutsSnapshot) => {
+              const routineName = routineDocument.data().name as string;
+
               workoutsByRoutine[routineDocument.id] = workoutsSnapshot.docs.map(
-                (docSnapshot) => ({
-                  id: docSnapshot.id,
-                  ...docSnapshot.data(),
-                }),
-              ) as Workout[];
+                (docSnapshot) => {
+                  const workoutData = docSnapshot.data() as Omit<Workout, "id">;
+
+                  return {
+                    id: docSnapshot.id,
+                    ...workoutData,
+                    routineName,
+                  };
+                },
+              );
 
               const workouts = Object.values(workoutsByRoutine).flat();
               setStats(calculateProgressStats(workouts));
