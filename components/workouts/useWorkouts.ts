@@ -27,7 +27,8 @@ export function useWorkouts(routineId: string) {
     sets: number;
     reps: number;
     weight: string;
-    category?: string;
+    category: string;
+    notes?: string;
   }) {
     if (!routineId || !values.name.trim()) return;
 
