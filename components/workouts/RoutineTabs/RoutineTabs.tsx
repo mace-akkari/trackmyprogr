@@ -13,10 +13,14 @@ export default function RoutineTabs() {
   const [activeId, setActiveId] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    if (firstRoutineId) {
+    const activeRoutineStillExists = plans.some(
+      (routine) => routine.id === activeId,
+    );
+
+    if (!activeRoutineStillExists) {
       setActiveId(firstRoutineId);
     }
-  }, [firstRoutineId]);
+  }, [plans, activeId, firstRoutineId]);
 
   if (isLoading) {
     return <div className="p-6 text-sm text-muted-foreground">Loading…</div>;
@@ -60,12 +64,12 @@ export default function RoutineTabs() {
               <TabCloseButton
                 onClick={async () => {
                   const shouldDelete = window.confirm(
-                    `Delete routine "${routine.name}"?`
+                    `Delete routine "${routine.name}"?`,
                   );
                   if (!shouldDelete) return;
 
                   const remainingRoutines = plans.filter(
-                    (plan) => plan.id !== routine.id
+                    (plan) => plan.id !== routine.id,
                   );
                   const nextRoutineId = remainingRoutines[0]?.id;
 
